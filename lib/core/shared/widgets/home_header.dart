@@ -2,6 +2,7 @@ import 'package:coinapp/core/providers/exchange_provider.dart';
 import 'package:coinapp/core/shared/theme/app_color.dart';
 import 'package:coinapp/core/shared/theme/app_palet.dart';
 import 'package:coinapp/core/shared/theme/app_strings.dart';
+import 'package:coinapp/view/exchange.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -98,11 +99,19 @@ class HomeHeader extends ConsumerWidget {
                           padding: const EdgeInsets.all(5),
                           child: Column(
                             children: [
-                              CircleAvatar(
-                                backgroundColor: Colors.transparent,
-                                radius: size.height/30,
-                                backgroundImage:
-                                    AssetImage(Strings.images[index]),
+                              GestureDetector(
+                             onTap: (){
+                               Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                 return ExchangePage(exchange.data[index]);
+                               }));
+                             },
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  radius: size.height/30,
+                                  backgroundImage:
+                                      AssetImage(Strings.images[index]),
+                                ),
+
                               ),
                               Padding(
                                 padding: Palet.pagePadding,
