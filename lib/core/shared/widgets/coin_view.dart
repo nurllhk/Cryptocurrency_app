@@ -6,12 +6,13 @@ import '../theme/app_strings.dart';
 
 class CoinView extends StatefulWidget {
   final Datum data;
-
   const CoinView(this.data, {super.key});
 
   @override
   State<CoinView> createState() => _LineChartSample2State();
 }
+
+late int price;
 
 class _LineChartSample2State extends State<CoinView> {
   List<Color> gradientColors = [
@@ -19,7 +20,6 @@ class _LineChartSample2State extends State<CoinView> {
     Colors.grey,
   ];
 
-  bool showAvg = false;
   int currentMonth = DateTime.now().month;
   List<String> allMonths = [
     "Ocak",
@@ -36,28 +36,51 @@ class _LineChartSample2State extends State<CoinView> {
     "Aralık"
   ];
 
+
   @override
   Widget build(BuildContext context) {
+     price = int.parse(widget.data.priceUsd.toString().substring(0,2)) ;
     return Scaffold(
       appBar: AppBar(),
       body: Column(
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/3,
+            height: MediaQuery.of(context).size.height/2.7,
             child: Column(
               children: [
                 ListTile(leading: Image.network(
                     "${Strings.iconName}${widget.data.symbol.toLowerCase()}@2x.png"),
-                title: Text(widget.data.name.toString()?? "",style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                title: Text(widget.data.name.toString(),style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
 
                 ),),
-                subtitle: Text(widget.data.priceUsd.toString().substring(0,10)?? "",style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                subtitle: Text(widget.data.priceUsd.toString().substring(0,10),style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.bold,
 
                 ),),
-                trailing: IconButton(onPressed: (){}, icon: const Icon(Icons.account_tree_rounded)),),
+                trailing: Tooltip(
+                    message: "News",
+                    child: IconButton(onPressed: (){}, icon: const Icon(Icons.account_tree_rounded))),),
+
+                Expanded(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading:const Icon(Icons.timelapse),
+                        title: const Text("24 Saatlik Hacim"),
+                        subtitle: Text(widget.data.volumeUsd24Hr.toString().substring(0,20)),),
+                      ListTile(
+                        leading:const Icon(Icons.shopping_basket_outlined),
+                        title: const Text("Market Cup"),
+                        subtitle: Text(widget.data.marketCapUsd.toString().substring(0,10)),),
+                      ListTile(
+                        leading:const Icon(Icons.compare_arrows),
+                        title: const Text("Değişim Yüzdesi"),
+                        subtitle: Text(widget.data.changePercent24Hr.toString().substring(0,5)),trailing: Text(widget.data.explorer,),),
+                    ],
+                  ),
+                )
                 
 
               ],
@@ -67,37 +90,19 @@ class _LineChartSample2State extends State<CoinView> {
           Stack(
             children: <Widget>[
               AspectRatio(
-                aspectRatio: 1.70,
+                aspectRatio: 1.50,
                 child: Padding(
                   padding: const EdgeInsets.only(
-                    right: 18,
-                    left: 12,
+                    right:20,
+                    left: 20,
                     top: 24,
                     bottom: 12,
                   ),
-                  child: LineChart(
-                    showAvg ? avgData() : mainData(),
+                  child: LineChart(mainData(),
                   ),
                 ),
               ),
-              SizedBox(
-                width: 60,
-                height: 34,
-                child: TextButton(
-                  onPressed: () {
-                    setState(() {
-                      showAvg = !showAvg;
-                    });
-                  },
-                  child: Text(
-                    'avg',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+
             ],
           ),
         ],
@@ -154,28 +159,6 @@ class _LineChartSample2State extends State<CoinView> {
     return text;
   }
 
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-    );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '10K';
-        break;
-      case 3:
-        text = '30k';
-        break;
-      case 5:
-        text = '50k';
-        break;
-      default:
-        return Container();
-    }
-
-    return Text(text, style: style, textAlign: TextAlign.left);
-  }
 
   LineChartData mainData() {
     return LineChartData(
@@ -213,12 +196,9 @@ class _LineChartSample2State extends State<CoinView> {
             getTitlesWidget: bottomTitleWidgets,
           ),
         ),
-        leftTitles: AxisTitles(
+        leftTitles: const AxisTitles(
           sideTitles: SideTitles(
-            showTitles: true,
-            interval: 1,
-            getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
+            showTitles: false,
           ),
         ),
       ),
@@ -229,17 +209,15 @@ class _LineChartSample2State extends State<CoinView> {
       minX: 0,
       maxX: 11,
       minY: 0,
-      maxY: 6,
+      maxY: price *2,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
+          spots:   [
+            FlSpot(0, double.parse(price.toString().substring(0,2))),
+            FlSpot(6.8,double.parse(price.toString().substring(0,2))),
+
             FlSpot(9.5, 3),
-            FlSpot(11, 4),
+            FlSpot(11, double.parse(price.toString().substring(0,2))),
           ],
           isCurved: true,
           gradient: LinearGradient(
@@ -263,100 +241,4 @@ class _LineChartSample2State extends State<CoinView> {
     );
   }
 
-  LineChartData avgData() {
-    return LineChartData(
-      lineTouchData: const LineTouchData(enabled: false),
-      gridData: FlGridData(
-        show: true,
-        drawHorizontalLine: true,
-        verticalInterval: 1,
-        horizontalInterval: 1,
-        getDrawingVerticalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-        getDrawingHorizontalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-      ),
-      titlesData: FlTitlesData(
-        show: true,
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            getTitlesWidget: bottomTitleWidgets,
-            interval: 1,
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
-            interval: 1,
-          ),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d)),
-      ),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
-      lineBarsData: [
-        LineChartBarData(
-          spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(11, 3.44),
-          ],
-          isCurved: true,
-          gradient: LinearGradient(
-            colors: [
-              ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                  .lerp(0.2)!,
-              ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                  .lerp(0.2)!,
-            ],
-          ),
-          barWidth: 5,
-          isStrokeCapRound: true,
-          dotData: const FlDotData(
-            show: false,
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: [
-                ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                    .lerp(0.2)!
-                    .withOpacity(0.1),
-                ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                    .lerp(0.2)!
-                    .withOpacity(0.1),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }

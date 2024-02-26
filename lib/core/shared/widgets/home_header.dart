@@ -70,15 +70,20 @@ class HomeHeader extends ConsumerWidget {
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold, color: Colors.white),
                       ),
-                      TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            "Daha Fazla",
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(color: PageColor.componentColor),
-                          ))
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                            return  ExchangePage(exchange);
+                          }));
+                        },
+                        child: Text(
+                          "Daha Fazla",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(color: PageColor.componentColor),
+                        ),
+                      )
                     ],
                   ),
                 )
@@ -101,9 +106,7 @@ class HomeHeader extends ConsumerWidget {
                             children: [
                               GestureDetector(
                              onTap: (){
-                               Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                                 return ExchangePage(exchange.data[index]);
-                               }));
+                           // TODO basıldığında exchange view olacak
                              },
                                 child: CircleAvatar(
                                   backgroundColor: Colors.transparent,

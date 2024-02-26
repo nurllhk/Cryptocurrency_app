@@ -1,18 +1,35 @@
 import 'package:coinapp/core/shared/models/excahnge_model.dart';
 import 'package:flutter/material.dart';
+import 'package:riverpod/src/common.dart';
 
 class ExchangePage extends StatelessWidget {
-  final Datum data;
+  final AsyncValue<Exchange> exchange;
 
-  const ExchangePage(this.data, {super.key});
+  const ExchangePage(this.exchange, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: [Text(data.name)],
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
+      body: exchange.when(
+          data: (exchangedata) {
+            return ListView.builder(
+                itemCount: exchangedata.data.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Icon(Icons.shop),
+                    title: Text(exchangedata.data[index].name ?? ""),
+                    subtitle: Text(
+                        "${exchangedata.data[index].volumeUsd.toString().length > 10 ? exchangedata.data[index].volumeUsd.toString().substring(0, 10) : exchangedata.data[index].volumeUsd.toString()}\$"),
+                  );
+                });
+          },
+          error: (err, stack) {},
+          loading: () => const Center(
+                child: CircularProgressIndicator.adaptive(),
+              )),
     );
   }
 }

@@ -1,8 +1,4 @@
-// To parse this JSON data, do
-//
-//     final coins = coinsFromJson(jsonString);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 Coins coinsFromJson(String str) => Coins.fromJson(json.decode(str));
