@@ -1,20 +1,23 @@
+import 'package:coinapp/core/providers/coins_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/coins_model.dart';
 import '../theme/app_strings.dart';
 
-class CoinView extends StatefulWidget {
+class CoinView extends ConsumerStatefulWidget {
   final Datum data;
+
   const CoinView(this.data, {super.key});
 
   @override
-  State<CoinView> createState() => _LineChartSample2State();
+  ConsumerState<CoinView> createState() => _LineChartSample2State();
 }
 
 late int price;
 
-class _LineChartSample2State extends State<CoinView> {
+class _LineChartSample2State extends ConsumerState<CoinView> {
   List<Color> gradientColors = [
     Colors.blue,
     Colors.grey,
@@ -36,77 +39,136 @@ class _LineChartSample2State extends State<CoinView> {
     "Aralık"
   ];
 
-
   @override
   Widget build(BuildContext context) {
-     price = int.parse(widget.data.priceUsd.toString().substring(0,2)) ;
+    var history =
+        ref.watch(coinHistoryProvider(widget.data.name.toLowerCase()));
+
+    price = int.parse(widget.data.priceUsd.toString().substring(0, 2));
     return Scaffold(
       appBar: AppBar(),
-      body: Column(
-        children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height/2.7,
-            child: Column(
+      body: history.when(
+          data: (historyData) {
+            return Column(
               children: [
-                ListTile(leading: Image.network(
-                    "${Strings.iconName}${widget.data.symbol.toLowerCase()}@2x.png"),
-                title: Text(widget.data.name.toString(),style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-
-                ),),
-                subtitle: Text(widget.data.priceUsd.toString().substring(0,10),style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-
-                ),),
-                trailing: Tooltip(
-                    message: "News",
-                    child: IconButton(onPressed: (){}, icon: const Icon(Icons.account_tree_rounded))),),
-
-                Expanded(
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height / 2.7,
                   child: Column(
                     children: [
                       ListTile(
-                        leading:const Icon(Icons.timelapse),
-                        title: const Text("24 Saatlik Hacim"),
-                        subtitle: Text(widget.data.volumeUsd24Hr.toString().substring(0,20)),),
-                      ListTile(
-                        leading:const Icon(Icons.shopping_basket_outlined),
-                        title: const Text("Market Cup"),
-                        subtitle: Text(widget.data.marketCapUsd.toString().substring(0,10)),),
-                      ListTile(
-                        leading:const Icon(Icons.compare_arrows),
-                        title: const Text("Değişim Yüzdesi"),
-                        subtitle: Text(widget.data.changePercent24Hr.toString().substring(0,5)),trailing: Text(widget.data.explorer,),),
+                        leading: Image.network(
+                            "${Strings.iconName}${widget.data.symbol.toLowerCase()}@2x.png"),
+                        title: Text(
+                          widget.data.name.toString(),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        subtitle: Text(
+                          widget.data.priceUsd.toString().substring(0, 10),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        trailing: Tooltip(
+                            message: "News",
+                            child: IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.account_tree_rounded))),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.timelapse),
+                              title: const Text("24 Saatlik Hacim"),
+                              subtitle: Text(widget.data.volumeUsd24Hr
+                                  .toString()
+                                  .substring(0, 20)),
+                            ),
+                            ListTile(
+                              leading:
+                                  const Icon(Icons.shopping_basket_outlined),
+                              title: const Text("Market Cup"),
+                              subtitle: Text(widget.data.marketCapUsd
+                                  .toString()
+                                  .substring(0, 10)),
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.compare_arrows),
+                              title: const Text("Değişim Yüzdesi"),
+                              subtitle: Text(widget.data.changePercent24Hr
+                                  .toString()
+                                  .substring(0, 5)),
+                              trailing: Text(
+                                widget.data.explorer,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
-                )
-                
-
-              ],
-            ),
-
-          ),
-          Stack(
-            children: <Widget>[
-              AspectRatio(
-                aspectRatio: 1.50,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right:20,
-                    left: 20,
-                    top: 24,
-                    bottom: 12,
-                  ),
-                  child: LineChart(mainData(),
-                  ),
                 ),
-              ),
-
-            ],
-          ),
-        ],
-      ),
+                Stack(
+                  children: <Widget>[
+                    AspectRatio(
+                      aspectRatio: 1.50,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          right: 20,
+                          left: 20,
+                          top: 24,
+                          bottom: 12,
+                        ),
+                        child: LineChart(
+                          mainData(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height / 6,
+                  child: ListView.builder(
+                      itemCount: historyData.data.length,
+                      itemBuilder: (context, index) {
+                        return int.parse(historyData.data[index].date
+                                    .toString()
+                                    .substring(5, 7)) ==
+                                currentMonth
+                            ? ListTile(
+                                title: Text(historyData.data[index].priceUsd
+                                    .toString()
+                                    .substring(0, 10)),
+                                trailing: Text(int.parse(historyData
+                                            .data[index].date
+                                            .toString()
+                                            .substring(5, 7)) ==
+                                        currentMonth
+                                    ? historyData.data[index].date
+                                        .toString()
+                                        .substring(0, 10)
+                                    : " "),
+                              )
+                            : const ListTile();
+                      }),
+                )
+              ],
+            );
+          },
+          error: (err, stack) {
+            return Center(
+              child: Text("Error: $err"),
+            );
+          },
+          loading: () => const Center(
+                child: CircularProgressIndicator.adaptive(),
+              )),
     );
   }
 
@@ -159,7 +221,6 @@ class _LineChartSample2State extends State<CoinView> {
     return text;
   }
 
-
   LineChartData mainData() {
     return LineChartData(
       gridData: FlGridData(
@@ -209,15 +270,14 @@ class _LineChartSample2State extends State<CoinView> {
       minX: 0,
       maxX: 11,
       minY: 0,
-      maxY: price *2,
+      maxY: price * 2,
       lineBarsData: [
         LineChartBarData(
-          spots:   [
-            FlSpot(0, double.parse(price.toString().substring(0,2))),
-            FlSpot(6.8,double.parse(price.toString().substring(0,2))),
-
+          spots: [
+            FlSpot(0, double.parse(price.toString().substring(0, 2))),
+            FlSpot(6.8, double.parse(price.toString().substring(0, 2))),
             FlSpot(9.5, 3),
-            FlSpot(11, double.parse(price.toString().substring(0,2))),
+            FlSpot(11, double.parse(price.toString().substring(0, 2))),
           ],
           isCurved: true,
           gradient: LinearGradient(
@@ -240,5 +300,4 @@ class _LineChartSample2State extends State<CoinView> {
       ],
     );
   }
-
 }

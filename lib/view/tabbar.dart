@@ -1,8 +1,8 @@
 import 'package:coinapp/core/providers/page_provider.dart';
+import 'package:coinapp/core/services/history_Service.dart';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../core/services/coins_serivce.dart';
 import '../core/shared/theme/app_color.dart';
 
 class TabbarPage extends ConsumerWidget {
