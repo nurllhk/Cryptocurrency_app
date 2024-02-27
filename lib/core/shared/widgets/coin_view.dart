@@ -1,4 +1,5 @@
 import 'package:coinapp/core/providers/coins_provider.dart';
+import 'package:coinapp/view/explorer_coin.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -64,11 +65,6 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
               spots.clear();
             },
             icon: const Icon(Icons.arrow_back_ios_new)),
-        title: IconButton(
-            onPressed: () {
-              print(date);
-            },
-            icon: const Icon(Icons.download)),
       ),
       body: history.when(
           data: (historyData) {
@@ -156,9 +152,22 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                               subtitle: Text(widget.data.changePercent24Hr
                                   .toString()
                                   .substring(0, 5)),
-                              trailing: Text(
-                                widget.data.explorer,
-                              ),
+                              trailing: Tooltip(
+                                message: "Explorer",
+                                child: IconButton(onPressed: (){
+
+
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (context){
+
+                                    date.clear();
+                                    spots.clear();
+                                    return Explorer(widget.data.explorer.toString());
+
+                                  }));
+
+                                // TODO gelen coinin web adresidir widget.data.explorer
+
+                              }, icon:const Icon(Icons.language)),),
                             ),
                           ],
                         ),
