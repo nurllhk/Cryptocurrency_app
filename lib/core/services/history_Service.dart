@@ -10,7 +10,6 @@ class HistoryService {
         .get(Uri.parse("${BaseUrl.historyUrl}$value/history?interval=d1"));
 
     if (response.statusCode == 200) {
-      print(response.body);
       return historyFromJson(response.body);
     } else {
       throw Exception("Error : ${response.statusCode}");

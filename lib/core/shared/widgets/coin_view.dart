@@ -6,6 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/coins_model.dart';
 import '../theme/app_strings.dart';
 
+Map<int, double> date = {};
+List<FlSpot> spots = [];
+
 class CoinView extends ConsumerStatefulWidget {
   final Datum data;
 
@@ -23,7 +26,8 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
     Colors.grey,
   ];
 
-  int currentMonth = DateTime.now().month;
+  DateTime currentMonth = DateTime.now();
+
   List<String> allMonths = [
     "Ocak",
     "Şubat",
@@ -41,14 +45,63 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
 
   @override
   Widget build(BuildContext context) {
-    var history =
-        ref.watch(coinHistoryProvider(widget.data.name.toLowerCase()));
 
-    price = int.parse(widget.data.priceUsd.toString().substring(0, 2));
+    var history =
+        ref.watch(coinHistoryProvider(widget.data.id.toLowerCase()));
+
+    var previousMonth1 = currentMonth.month - 1;
+    var previousMonth2 = currentMonth.month - 2;
+    String priceStr = widget.data.priceUsd.toString();
+    int dotIndex = priceStr.indexOf(".");
+    String priceSubstring = priceStr.substring(0, dotIndex);
+    price = int.parse(priceSubstring);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              date.clear();
+              spots.clear();
+            },
+            icon: const Icon(Icons.arrow_back_ios_new)),
+        title: IconButton(
+            onPressed: () {
+              print(date);
+            },
+            icon: const Icon(Icons.download)),
+      ),
       body: history.when(
           data: (historyData) {
+            if (previousMonth1 == 0) {
+              previousMonth1 = 12;
+              previousMonth2 = 11;
+            } else if (previousMonth1 == 1) {
+              previousMonth2 = 12;
+            }
+
+            for (var i = 0; i < historyData.data.length; i++) {
+              var month = historyData.data[i].date.month;
+              var price = double.parse(historyData.data[i].priceUsd);
+
+              if (month == currentMonth.month ||
+                  month == previousMonth1 ||
+                  month == previousMonth2) {
+                date[month] = price;
+              }
+            }
+            for (int i = 0; i < 3; i++) {
+              int month = currentMonth.month - i;
+              if (month <= 0) {
+                month += 12;
+              }
+              String priceStr = date[month]?.toString() ?? '0';
+              double price = double.parse(priceStr.substring(0, dotIndex));
+              spots.add(FlSpot(i * 4.5.toDouble(), price));
+            }
+
+            spots.add(FlSpot(
+                11, double.parse(price.toString().substring(0, dotIndex))));
+
             return Column(
               children: [
                 SizedBox(
@@ -62,16 +115,16 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                         title: Text(
                           widget.data.name.toString(),
                           style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         subtitle: Text(
-                          widget.data.priceUsd.toString().substring(0, 10),
+                          widget.data.priceUsd.toString().split('.')[0],
                           style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         trailing: Tooltip(
                             message: "News",
@@ -87,15 +140,15 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                               title: const Text("24 Saatlik Hacim"),
                               subtitle: Text(widget.data.volumeUsd24Hr
                                   .toString()
-                                  .substring(0, 20)),
+                                  .split('.')[0]),
                             ),
                             ListTile(
                               leading:
-                                  const Icon(Icons.shopping_basket_outlined),
+                              const Icon(Icons.shopping_basket_outlined),
                               title: const Text("Market Cup"),
                               subtitle: Text(widget.data.marketCapUsd
                                   .toString()
-                                  .substring(0, 10)),
+                                  .split('.')[0]),
                             ),
                             ListTile(
                               leading: const Icon(Icons.compare_arrows),
@@ -131,33 +184,6 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height / 6,
-                  child: ListView.builder(
-                      itemCount: historyData.data.length,
-                      itemBuilder: (context, index) {
-                        return int.parse(historyData.data[index].date
-                                    .toString()
-                                    .substring(5, 7)) ==
-                                currentMonth
-                            ? ListTile(
-                                title: Text(historyData.data[index].priceUsd
-                                    .toString()
-                                    .substring(0, 10)),
-                                trailing: Text(int.parse(historyData
-                                            .data[index].date
-                                            .toString()
-                                            .substring(5, 7)) ==
-                                        currentMonth
-                                    ? historyData.data[index].date
-                                        .toString()
-                                        .substring(0, 10)
-                                    : " "),
-                              )
-                            : const ListTile();
-                      }),
-                )
               ],
             );
           },
@@ -167,8 +193,8 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
             );
           },
           loading: () => const Center(
-                child: CircularProgressIndicator.adaptive(),
-              )),
+            child: CircularProgressIndicator.adaptive(),
+          )),
     );
   }
 
@@ -180,13 +206,13 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
     Widget text;
     switch (value.toInt()) {
       case 2:
-        text = Text(whereMonth(currentMonth - 3), style: style);
+        text = Text(whereMonth(currentMonth.month - 3), style: style);
         break;
       case 5:
-        text = Text(whereMonth(currentMonth - 2), style: style);
+        text = Text(whereMonth(currentMonth.month - 2), style: style);
         break;
       case 8:
-        text = Text(whereMonth(currentMonth - 1), style: style);
+        text = Text(whereMonth(currentMonth.month - 1), style: style);
         break;
       default:
         text = const Text('', style: style);
@@ -273,12 +299,7 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
       maxY: price * 2,
       lineBarsData: [
         LineChartBarData(
-          spots: [
-            FlSpot(0, double.parse(price.toString().substring(0, 2))),
-            FlSpot(6.8, double.parse(price.toString().substring(0, 2))),
-            FlSpot(9.5, 3),
-            FlSpot(11, double.parse(price.toString().substring(0, 2))),
-          ],
+          spots: spots,
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
