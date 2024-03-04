@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 Coins coinsFromJson(String str) => Coins.fromJson(json.decode(str));
@@ -24,14 +23,14 @@ class Coins {
       );
 
   factory Coins.fromJson(Map<String, dynamic> json) => Coins(
-    data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
-    timestamp: json["timestamp"],
-  );
+        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+        timestamp: json["timestamp"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "data": List<dynamic>.from(data.map((x) => x.toJson())),
-    "timestamp": timestamp,
-  };
+        "data": List<dynamic>.from(data.map((x) => x.toJson())),
+        "timestamp": timestamp,
+      };
 }
 
 class Datum {
@@ -93,32 +92,32 @@ class Datum {
       );
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-    id: json["id"],
-    rank: json["rank"],
-    symbol: json["symbol"],
-    name: json["name"],
-    supply: json["supply"],
-    maxSupply: json["maxSupply"],
-    marketCapUsd: json["marketCapUsd"],
-    volumeUsd24Hr: json["volumeUsd24Hr"],
-    priceUsd: json["priceUsd"],
-    changePercent24Hr: json["changePercent24Hr"],
-    vwap24Hr: json["vwap24Hr"],
-    explorer: json["explorer"],
-  );
+        id: json["id"],
+        rank: json["rank"],
+        symbol: json["symbol"],
+        name: json["name"],
+        supply: json["supply"],
+        maxSupply: json["maxSupply"],
+        marketCapUsd: json["marketCapUsd"],
+        volumeUsd24Hr: json["volumeUsd24Hr"],
+        priceUsd: json["priceUsd"],
+        changePercent24Hr: json["changePercent24Hr"],
+        vwap24Hr: json["vwap24Hr"],
+        explorer: json["explorer"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "rank": rank,
-    "symbol": symbol,
-    "name": name,
-    "supply": supply,
-    "maxSupply": maxSupply,
-    "marketCapUsd": marketCapUsd,
-    "volumeUsd24Hr": volumeUsd24Hr,
-    "priceUsd": priceUsd,
-    "changePercent24Hr": changePercent24Hr,
-    "vwap24Hr": vwap24Hr,
-    "explorer": explorer,
-  };
+        "id": id,
+        "rank": rank,
+        "symbol": symbol,
+        "name": name,
+        "supply": supply,
+        "maxSupply": maxSupply,
+        "marketCapUsd": marketCapUsd,
+        "volumeUsd24Hr": volumeUsd24Hr,
+        "priceUsd": priceUsd,
+        "changePercent24Hr": changePercent24Hr,
+        "vwap24Hr": vwap24Hr,
+        "explorer": explorer,
+      };
 }

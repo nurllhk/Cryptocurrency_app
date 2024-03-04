@@ -45,10 +45,15 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  void dispose() {
+    spots.clear();
+    date.clear();
+    super.dispose();
+  }
 
-    var history =
-        ref.watch(coinHistoryProvider(widget.data.id.toLowerCase()));
+  @override
+  Widget build(BuildContext context) {
+    var history = ref.watch(coinHistoryProvider(widget.data.id.toLowerCase()));
 
     var previousMonth1 = currentMonth.month - 1;
     var previousMonth2 = currentMonth.month - 2;
@@ -111,16 +116,16 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                         title: Text(
                           widget.data.name.toString(),
                           style:
-                          Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         subtitle: Text(
-                          widget.data.priceUsd.toString().split('.')[0],
+                          "${widget.data.priceUsd.toString().split('.')[0]}\$",
                           style:
-                          Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         trailing: Tooltip(
                             message: "News",
@@ -140,7 +145,7 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                             ),
                             ListTile(
                               leading:
-                              const Icon(Icons.shopping_basket_outlined),
+                                  const Icon(Icons.shopping_basket_outlined),
                               title: const Text("Market Cup"),
                               subtitle: Text(widget.data.marketCapUsd
                                   .toString()
@@ -154,20 +159,18 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                                   .substring(0, 5)),
                               trailing: Tooltip(
                                 message: "Explorer",
-                                child: IconButton(onPressed: (){
-
-
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (context){
-
-                                    date.clear();
-                                    spots.clear();
-                                    return Explorer(widget.data.explorer.toString());
-
-                                  }));
-
-                                // TODO gelen coinin web adresidir widget.data.explorer
-
-                              }, icon:const Icon(Icons.language)),),
+                                child: IconButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) {
+                                        date.clear();
+                                        spots.clear();
+                                        return Explorer(
+                                            widget.data.explorer.toString());
+                                      }));
+                                    },
+                                    icon: const Icon(Icons.language)),
+                              ),
                             ),
                           ],
                         ),
@@ -178,7 +181,7 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                 Stack(
                   children: <Widget>[
                     AspectRatio(
-                      aspectRatio: 1.50,
+                      aspectRatio: 1.40,
                       child: Padding(
                         padding: const EdgeInsets.only(
                           right: 20,
@@ -193,6 +196,7 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                     ),
                   ],
                 ),
+
               ],
             );
           },
@@ -202,8 +206,8 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
             );
           },
           loading: () => const Center(
-            child: CircularProgressIndicator.adaptive(),
-          )),
+                child: CircularProgressIndicator.adaptive(),
+              )),
     );
   }
 
@@ -299,8 +303,8 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
         ),
       ),
       borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d)),
+        show: false,
+        border: Border.all(color: Colors.white),
       ),
       minX: 0,
       maxX: 11,

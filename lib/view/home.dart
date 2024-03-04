@@ -45,7 +45,6 @@ class Home extends ConsumerWidget {
                         );
                       }),
                   error: (err, stack) {
-                    print("HATA $err");
                     return Center(
                       child: Text("Error: $err"),
                     );

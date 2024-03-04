@@ -3,6 +3,7 @@ import 'package:coinapp/core/shared/theme/app_color.dart';
 import 'package:coinapp/core/shared/theme/app_palet.dart';
 import 'package:coinapp/core/shared/theme/app_strings.dart';
 import 'package:coinapp/view/exchange.dart';
+import 'package:coinapp/view/explorer_coin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -106,7 +107,11 @@ class HomeHeader extends ConsumerWidget {
                             children: [
                               GestureDetector(
                              onTap: (){
-                           // TODO basıldığında exchange view olacak
+
+                               Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                 return Explorer(exchange.data[index].exchangeUrl);
+                               }));
+
                              },
                                 child: CircleAvatar(
                                   backgroundColor: Colors.transparent,

@@ -18,7 +18,16 @@ class TabbarManager extends ChangeNotifier {
     index = value;
     notifyListeners();
   }
+
+  int progress = 0;
+  void progressChange (int value){
+    progress = value;
+    notifyListeners();
+  }
+
 }
 
 final tabbarProvider =
     ChangeNotifierProvider<TabbarManager>((ref) => TabbarManager());
+
+final loadingProvider = StateProvider((ref) => true);

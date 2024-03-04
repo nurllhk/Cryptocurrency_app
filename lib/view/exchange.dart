@@ -1,4 +1,5 @@
 import 'package:coinapp/core/shared/models/excahnge_model.dart';
+import 'package:coinapp/view/explorer_coin.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod/src/common.dart';
 
@@ -19,11 +20,17 @@ class ExchangePage extends StatelessWidget {
                 itemCount: exchangedata.data.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    leading: Icon(Icons.shop),
+                    onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context){
+
+                        return Explorer(exchangedata.data[index].exchangeUrl);
+                      }));
+                    },
+                    leading: Text(exchangedata.data[index].rank),
                     title: Text(exchangedata.data[index].name ?? ""),
                     subtitle: Text(
                         "${exchangedata.data[index].volumeUsd.toString().length > 10 ? exchangedata.data[index].volumeUsd.toString().substring(0, 10) : exchangedata.data[index].volumeUsd.toString()}\$"),
-                  );
+                  trailing: Text(exchangedata.data[index].volumeUsd.toString().split(".")[0]),);
                 });
           },
           error: (err, stack) {},
