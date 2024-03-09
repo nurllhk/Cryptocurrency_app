@@ -32,10 +32,13 @@ class Home extends ConsumerWidget {
                                 builder: (context) =>
                                     CoinView(coins.data[index])));
                           },
-                          leading: SizedBox(
-                              width: MediaQuery.of(context).size.width / 10,
-                              child: Image.network(
-                                  "${Strings.iconName}${coins.data[index].symbol.toLowerCase()}@2x.png")),
+                          leading: Hero(
+                            tag: "coin",
+                            child: SizedBox(
+                                width: MediaQuery.of(context).size.width / 10,
+                                child: Image.network(
+                                    "${Strings.iconName}${coins.data[index].symbol.toLowerCase()}@2x.png")),
+                          ),
                           title: Text(coins.data[index].symbol),
                           subtitle: Text(coins.data[index].name),
                           trailing: Text(
