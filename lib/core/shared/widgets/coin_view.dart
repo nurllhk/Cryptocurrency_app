@@ -1,5 +1,7 @@
 import 'package:coinapp/core/providers/coins_provider.dart';
 import 'package:coinapp/view/explorer_coin.dart';
+import 'package:coinapp/view/news.dart';
+import 'package:coinapp/view/tabbar.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -111,8 +113,11 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                   child: Column(
                     children: [
                       ListTile(
-                        leading: Image.network(
-                            "${Strings.iconName}${widget.data.symbol.toLowerCase()}@2x.png"),
+                        leading: Hero(
+                          tag: "coin",
+                          child: Image.network(
+                              "${Strings.iconName}${widget.data.symbol.toLowerCase()}@2x.png"),
+                        ),
                         title: Text(
                           widget.data.name.toString(),
                           style:
@@ -130,7 +135,11 @@ class _LineChartSample2State extends ConsumerState<CoinView> {
                         trailing: Tooltip(
                             message: "News",
                             child: IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                    return const TabbarPage();
+                                  }));
+                                },
                                 icon: const Icon(Icons.account_tree_rounded))),
                       ),
                       Expanded(

@@ -1,6 +1,7 @@
 import 'package:coinapp/core/providers/news_provider.dart';
 import 'package:coinapp/core/shared/theme/app_color.dart';
 import 'package:coinapp/core/shared/theme/app_palet.dart';
+import 'package:coinapp/core/shared/widgets/news_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,47 +26,61 @@ class _NewsState extends ConsumerState<News> {
                 setState(() {});
                 return Future<void>.delayed(const Duration(seconds: 3));
               },
-              child: ListView.builder(itemBuilder: (context, index) {
-                return Container(
-                  margin: Palet.pagePadding + const EdgeInsets.symmetric(vertical: 15),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: Palet.singleRadius),
-                  width: size.width / 1.2,
-                  height: size.height / 2,
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: Palet.singleRadius,
-                        child: SizedBox(
+              child: ListView.builder(
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: (){
+
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                      return NewsView(news.articles[index]);
+                    }));
+
+                  },
+                  child: Container(
+                    margin: Palet.pagePadding ,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: Palet.singleRadius),
+                    width: size.width / 1.2,
+                    height: size.height / 2.2,
+                    child: Column(
+                      children: [
+                        Hero(
+                          tag: "newImage",
+                          child: ClipRRect(
+                            borderRadius: Palet.singleRadius,
+                            child: SizedBox(
+                                width: size.width,
+                                height: size.height / 4,
+                                child: Image.network(
+                                  news.articles[index].urlToImage ?? "",
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (object,s,g){
+                                    return const SizedBox();
+                                  },
+                                )),
+                          ),
+                        ),
+                        Container(
+                            margin: Palet.pagePadding,
                             width: size.width,
-                            height: size.height / 4,
-                            child: Image.network(
-                              news.articles[index].urlToImage ?? "",
-                              fit: BoxFit.cover,
-                              errorBuilder: (object,s,g){
-                                return const SizedBox();
-                              },
+                            height: size.height / 13,
+                            child: Text(
+                              news.articles[index].title ?? "",
+                              style: Theme.of(context).textTheme.titleMedium,
                             )),
-                      ),
-                      Container(
-                          margin: Palet.pagePadding,
-                          width: size.width,
-                          height: size.height / 11,
-                          child: Text(
-                            news.articles[index].title ?? "",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          )),
-                      Container(
-                          margin: Palet.pagePadding,
-                          width: size.width,
-                          height: size.height / 10,
-                          child: Text(
-                            news.articles[index].description.length > 150
-                                ? '${news.articles[index].description.substring(0, 150)}...'
-                                : news.articles[index].description ?? "",
-                          )),
-                    ],
+                        Container(
+                            margin: Palet.pagePadding,
+                            width: size.width,
+                            height: size.height / 15,
+                            child: Text(
+                              news.articles[index].description.length > 150
+                                  ? '${news.articles[index].description.substring(0, 150)}...'
+                                  : news.articles[index].description ?? "",
+                            )),
+                      ],
+                    ),
                   ),
                 );
               }),

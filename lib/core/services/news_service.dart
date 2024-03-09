@@ -11,6 +11,6 @@ Future<News> fetchNews() async {
   if (response.statusCode == 200) {
     return newsFromJson(response.body);
   } else {
-    throw Exception('Failed to load news');
+    throw Exception('Failed to load news ${response.statusCode}');
   }
 }

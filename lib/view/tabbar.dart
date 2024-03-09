@@ -1,6 +1,4 @@
 import 'package:coinapp/core/providers/page_provider.dart';
-import 'package:coinapp/core/services/history_Service.dart';
-import 'package:coinapp/view/explorer_coin.dart';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +11,6 @@ class TabbarPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     TabbarManager tabbar = ref.watch(tabbarProvider);
     return Scaffold(
-
         backgroundColor: PageColor.pageColor,
         bottomNavigationBar: CustomNavigationBar(
           iconSize: 30.0,
